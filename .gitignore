@@ -1,0 +1,7 @@
+.*
+_*
+
+!.github
+!.gitignore
+
+/target
