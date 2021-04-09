@@ -63,27 +63,18 @@ fn dpll(formula: &Formula, mut vars: &mut Assignment) -> bool {
 }
 
 fn unit_propagate(mut formula: &mut Formula, vars: &mut Assignment) {
-    while let Some(lit) = find_unit_clause(&formula) {
-        let (var, truth) = match lit {
+    while let Some(clause) = formula.iter().find(|clause| clause.len() == 1) {
+        let (var, truth) = match clause[0] {
             Var(i) => (i, true),
             Not(i) => (i, false),
         };
         vars[var] = truth;
-        assign(&mut formula, var, truth);
+        simplify(&mut formula, var, truth);
     }
 }
 
-fn find_unit_clause(formula: &Formula) -> Option<Literal> {
-    for clause in formula {
-        if clause.len() == 1 {
-            return Some(clause[0]);
-        }
-    }
-    None
-}
-
-/// Assigns a value to the specified variable and simplifies the formula.
-fn assign(formula: &mut Formula, var: usize, truth: bool) {
+/// Simplifies the formula using given variable assignment.
+fn simplify(formula: &mut Formula, var: usize, truth: bool) {
     let truthy_lit = if truth { Var(var) } else { Not(var) };
     let falsey_lit = if truth { Not(var) } else { Var(var) };
 
@@ -150,7 +141,7 @@ mod test {
     use super::*;
 
     #[test]
-    fn test_dpll() {
+    fn test_check_sat() {
         // Empty formula
         {
             let formula = vec![];
@@ -205,7 +196,7 @@ mod test {
     }
 
     #[test]
-    fn test_assign() {
+    fn test_simplify() {
         // Raw and negated literals are resolved differently.
         {
             let mut formula = vec![vec![Var(1), Var(2)], vec![Not(1), Var(3)]];
