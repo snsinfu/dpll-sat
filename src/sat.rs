@@ -1,16 +1,28 @@
+/// Variable assignment for a SAT problem. The i-th element designates the truth
+/// value of the i-th variable.
 pub type Assignment = Vec<bool>;
+
+/// CNF formula. A formula represents the AND-product of the contained clauses.
 pub type Formula = Vec<Clause>;
+
+/// A clause in a CNF formula. A clause represents the OR-sum of the contained
+/// literals.
 pub type Clause = Vec<Literal>;
 
+/// A literal in a clause.
 #[derive(Clone, Copy, PartialEq)]
 pub enum Literal {
     Var(usize),
     Not(usize),
 }
 
-pub use Literal::Not;
 pub use Literal::Var;
+pub use Literal::Not;
 
+/// Solves a satisfiability problem given as a CNF formula.
+///
+/// Returns a variable assignment if the formula is satisfiable, or None if the
+/// formula is unsatisfiable.
 pub fn check_sat(formula: &Formula) -> Option<Assignment> {
     let mut n_vars = 0;
 
@@ -62,6 +74,18 @@ fn dpll(formula: &Formula, mut vars: &mut Assignment) -> bool {
     dpll(&formula, &mut vars)
 }
 
+/// Resolves unit clauses in a CNF formula.
+///
+/// # Unit propagation
+///
+/// A unit clause is a clause consisting of a single literal:
+///
+/// > formula = ... ∧ x ∧ ...
+///
+/// Such a clause in a CNF formula induces an assignment `x = true` so that the
+/// formula must become true. Unit propagation finds out such assignments and
+/// simplifies the formula until all unit clauses are consumed.
+///
 fn unit_propagate(mut formula: &mut Formula, vars: &mut Assignment) {
     while let Some(clause) = formula.iter().find(|clause| clause.len() == 1) {
         let (var, truth) = match clause[0] {
@@ -73,7 +97,33 @@ fn unit_propagate(mut formula: &mut Formula, vars: &mut Assignment) {
     }
 }
 
-/// Simplifies the formula using given variable assignment.
+/// Simplifies a CNF formula using given variable assignment.
+///
+/// # Simplification
+///
+/// A variable assignment resolves literals `Var(var)` and `Not(var)` in the
+/// formula to true or false. Note that a false literal (say x) does not
+/// contribute to the condition of a clause:
+///
+/// > C ∨ x = C  if x = false
+///
+/// so, a simplification will remove all false literals from the formula. On the
+/// other hand, a true literal (say y) makes the clause containing y true:
+///
+/// > C ∨ y = true  if y = true
+///
+/// i.e., the clause becomes true. So, a simplification will remove all clauses
+/// containing one or more true literals.
+///
+/// # Empty clause
+///
+/// The simplification may leave empty clause(s) in the formula. An empty clause
+/// must have originated from a unit clause consisting of a false literal x:
+///
+/// > formula = ... ∧ x ∧ ... ,  x = false .
+///
+/// Therefore, the formula must be unsatisfiable in that case.
+///
 fn simplify(formula: &mut Formula, var: usize, truth: bool) {
     let truthy_lit = if truth { Var(var) } else { Not(var) };
     let falsey_lit = if truth { Not(var) } else { Var(var) };
@@ -108,8 +158,7 @@ fn simplify(formula: &mut Formula, var: usize, truth: bool) {
     }
 }
 
-/// Finds the most used variable in a formula. This function allocates O(n_vars)
-/// temporary memory.
+/// Finds the most used variable in a formula.
 fn find_dominant_variable(formula: &Formula, n_vars: usize) -> usize {
     let mut freqs = vec![0; n_vars];
 
