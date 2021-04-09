@@ -249,14 +249,14 @@ mod test {
         // Raw and negated literals are resolved differently.
         {
             let mut formula = vec![vec![Var(1), Var(2)], vec![Not(1), Var(3)]];
-            assign(&mut formula, 1, true);
+            simplify(&mut formula, 1, true);
             assert!(formula == vec![vec![Var(3)]]);
         }
 
         // Falsey unit clause becomes an empty clause.
         {
             let mut formula = vec![vec![Var(1)], vec![Var(2)]];
-            assign(&mut formula, 1, false);
+            simplify(&mut formula, 1, false);
             assert!(formula == vec![vec![], vec![Var(2)]]);
         }
     }
