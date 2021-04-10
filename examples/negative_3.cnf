@@ -1,0 +1,12 @@
+c Three-node negative feedback loop.
+c 1 --> 2 --> 3 --> 1 ...
+
+p cnf 3 4
+
+c Avoid trivial assignment
+1 2 3 0
+
+c Negative feedbacks
+-1 -2 0
+-2 -3 0
+-3 -1 0
