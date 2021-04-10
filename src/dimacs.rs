@@ -48,11 +48,14 @@ fn parse_header(src: &mut dyn io::BufRead) -> Result<Header, Error> {
             Err(err) => return Err(Error::IO(err)),
         }
 
-        if line.is_empty() || line.starts_with("c") {
+        if line.starts_with("c") {
             continue;
         }
 
         let tokens: Vec<&str> = line.split_whitespace().collect();
+        if tokens.len() == 0 {
+            continue;
+        }
 
         // p cnf <num> <num>
         if tokens[0] == "p" {
@@ -103,7 +106,7 @@ fn parse_formula(src: &mut dyn io::BufRead, header: &Header) -> Result<sat::Form
             Err(err) => return Err(Error::IO(err)),
         }
 
-        if line.is_empty() || line.starts_with("c") {
+        if line.starts_with("c") {
             continue;
         }
 
@@ -194,6 +197,20 @@ mod test {
     #[test]
     fn test_parse_header_comment() {
         let mut src = "c comment\np cnf 3 2\n".as_bytes();
+        let result = parse_header(&mut src);
+        let expect = Header {
+            num_variables: 3,
+            num_clauses: 2,
+        };
+        match result {
+            Ok(actual) => assert_eq!(actual, expect),
+            Err(err) => panic!(format!("error: {}", err)),
+        }
+    }
+
+    #[test]
+    fn test_parse_header_empty_lines() {
+        let mut src = "\n\np cnf 3 2\n".as_bytes();
         let result = parse_header(&mut src);
         let expect = Header {
             num_variables: 3,
