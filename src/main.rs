@@ -13,8 +13,10 @@ fn main() {
     };
 
     if let Some(vars) = sat::check_sat(&formula) {
+        println!("sat");
         println!("{}", format_assignment(&vars));
     } else {
+        println!("unsat");
         std::process::exit(1);
     }
 }
@@ -25,7 +27,10 @@ fn format_assignment(vars: &sat::Assignment) -> String {
         if i > 0 {
             message.push(' ');
         }
-        message.push_str(&format!("{}{}", if truth { "" } else { "-" }, i + 1));
+        if !truth {
+            message.push('-');
+        }
+        message.push_str(&format!("{}", i + 1));
     }
     message
 }
