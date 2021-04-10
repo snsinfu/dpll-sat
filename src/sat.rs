@@ -10,14 +10,14 @@ pub type Formula = Vec<Clause>;
 pub type Clause = Vec<Literal>;
 
 /// A literal in a clause.
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Literal {
     Var(usize),
     Not(usize),
 }
 
-pub use Literal::Var;
 pub use Literal::Not;
+pub use Literal::Var;
 
 /// Solves a satisfiability problem given as a CNF formula.
 ///
