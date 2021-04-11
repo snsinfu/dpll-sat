@@ -1,0 +1,31 @@
+c 8-node boolean network. The arrows in the figure designate negative
+c feedbacks. That is, "A ---> B" means that A implies -B.
+c
+c   1 ---> 2 ---> 3 <-----------+
+c   ^      ^      |             |
+c   |      |      |             |
+c   |      |      V             |
+c   |      +----- 4 <--- 8 <--- 7
+c   |             |             ^
+c   +----- 5 <----+             |
+c          |                    |
+c          +----> 6 ------------+
+c
+
+p cnf 8 13
+
+c Avoid trivial all-false assignment
+1 2 3 4 5 6 7 8 0
+
+c Negative feedbacks
+-1 -2 0
+-2 -3 0
+-3 -4 0
+-4 -2 0
+-4 -5 0
+-5 -6 0
+-5 -1 0
+-6 -7 0
+-7 -3 0
+-7 -8 0
+-8 -4 0
