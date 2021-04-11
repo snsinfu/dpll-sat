@@ -96,7 +96,7 @@ program startup to termination. Benchmarks ran on Fedora 33 Linux with AMD Ryzen
 |-------------------------------------------|------|---------|--------|--------|
 | Random 3-SAT CBS_k3_n100_m403_b10_0.cnf   | 100  | 403     | 0.03s  |  0.01s |
 | blocksworld huge.cnf                      | 459  | 7054    | 0.15s  |  0.00s |
-| SAT-02 glassy-sat-sel_N210_n.shuffled.cnf | 210  | 980     | > 1day |  0.85s |
+| SAT-02 glassy-sat-sel_N210_n.shuffled.cnf | 210  | 980     | 215min |  0.85s |
 | SAT-02 homer10.shuffled.cnf               | 360  | 3460    | > 1day | 12.77s |
 
 [satlib]: https://www.cs.ubc.ca/~hoos/SATLIB/
