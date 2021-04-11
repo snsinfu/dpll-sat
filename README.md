@@ -47,6 +47,29 @@ The output format is essentially the same as that of [z3][z3].
 
 ## Implementation notes
 
+The algorithm is implemented in the following way in pseudocode:
+
+```javascript
+function DPLL(formula, vars) {
+    // Simplify formula by determining variables in unit clauses.
+    formula = copy(formula);
+    unit_propagate(formula, vars);
+
+    // Stopping conditions.
+    if (formula is empty) {
+        return "SAT";
+    }
+    if (empty clause in formula) {
+        return "UNSAT";
+    }
+
+    // Choose a branching literal and recurse.
+    v = choose_literal(formula);
+
+    return DPLL(formula + [v], vars) || DPLL(formula + [not(v)], vars);
+}
+```
+
 - Pure literal elimination is not implemented due to the complexity of keeping
   track of the polarity of every literal in a formula.
 - The branching literal is chosen to be the most-used variable in a formula.
