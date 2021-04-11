@@ -9,6 +9,12 @@
 wrote this program for learning purposes and also for comparing the performance
 of a naive DPLL solver and modern solvers.
 
+- [Build](#build)
+- [Usage](#usage)
+- [Implementation notes](#implementation-notes)
+- [Benchmarks](#benchmarks)
+- [References](#references)
+
 [dpll]: https://en.wikipedia.org/wiki/DPLL_algorithm
 
 ## Build
@@ -39,6 +45,40 @@ The output format is essentially the same as that of [z3][z3].
 [format]: http://www.satcompetition.org/2011/format-benchmarks2011.html
 [z3]: https://github.com/Z3Prover/z3
 
+## Implementation notes
+
+- Pure literal elimination is not implemented due to the complexity of keeping
+  track of the polarity of every literal in a formula.
+- The branching literal is chosen to be the most-used variable in a formula.
+  The literal is eliminated in the next recursion, so this strategy eagerly
+  reduces the size of the formula.
+- Every recursion creates a new copy of a formula. This is inefficient. The copy
+  is necessary because the algorithm eliminates some clauses and literals in a
+  formula and later revert it for backtracking. But, most clauses are untouched.
+  There would be a clever data structure that can reduce the number of copies.
+  Maybe deque?
+- A formula is represented as a vector-of-vectors. It's horribly inefficient
+  since a formula tends to consist of many small clauses, making memory access
+  extremely scattered. It would be much better to use a flat vector with
+  sentinel values.
+
+## Benchmarks
+
+Run time for some benchmark instances found on [the satlib site][satlib] and a
+[benchmark page][bench]. The run time is the total "USER" time spent from a
+program startup to termination. Benchmarks ran on Fedora 33 Linux with AMD Ryzen
+3600 CPU @ 4.2GHz (boost).
+
+| Instance                                  | #var | #clause | dpll   | z3     |
+|-------------------------------------------|------|---------|--------|--------|
+| Random 3-SAT CBS_k3_n100_m403_b10_0.cnf   | 100  | 403     | 0.03s  |  0.01s |
+| blocksworld huge.cnf                      | 459  | 7054    | 0.15s  |  0.00s |
+| SAT-02 glassy-sat-sel_N210_n.shuffled.cnf | 210  | 980     | > 1day |  0.85s |
+| SAT-02 homer10.shuffled.cnf               | 360  | 3460    | > 1day | 12.77s |
+
+[satlib]: https://www.cs.ubc.ca/~hoos/SATLIB/
+[bench]: https://www.cs.ubc.ca/~hoos/SATLIB/benchm.html
+
 ## References
 
 This lecture note is useful to understand the DPLL algorithm:
@@ -48,7 +88,3 @@ This lecture note is useful to understand the DPLL algorithm:
 This book has a ton of examples:
 
 - https://sat-smt.codes/
-
-This page has many DIMACS CNF files to play with:
-
-- https://www.cs.ubc.ca/~hoos/SATLIB/benchm.html
