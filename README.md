@@ -92,15 +92,19 @@ Run time for some benchmark instances found on [the satlib site][satlib] and a
 program startup to termination. Benchmarks ran on Fedora 33 Linux with AMD Ryzen
 3600 CPU @ 4.2GHz (boost).
 
-| Instance                                  | #var | #clause | dpll   | z3     |
-|-------------------------------------------|------|---------|--------|--------|
-| Random 3-SAT CBS_k3_n100_m403_b10_0.cnf   | 100  | 403     | 0.03s  |  0.01s |
-| blocksworld huge.cnf                      | 459  | 7054    | 0.15s  |  0.00s |
-| SAT-02 glassy-sat-sel_N210_n.shuffled.cnf | 210  | 980     | 215min |  0.85s |
-| SAT-02 homer10.shuffled.cnf               | 360  | 3460    | > 1day | 12.77s |
+| Instance                                  | #var | #clause | dpll   | z3     | cadical |
+|-------------------------------------------|------|---------|--------|--------|---------|
+| Random 3-SAT CBS_k3_n100_m403_b10_0.cnf   | 100  | 403     | 0.03s  |  0.01s | 0.00s   |
+| blocksworld huge.cnf                      | 459  | 7054    | 0.15s  |  0.00s | 0.00s   |
+| SAT-02 glassy-sat-sel_N210_n.shuffled.cnf | 210  | 980     | 215min |  0.85s | 0.31s   |
+| SAT-02 homer10.shuffled.cnf               | 360  | 3460    | > 1day | 12.77s | 4.22s   |
+
+Z3 does pretty good job considering [CaDiCaL][cadical] is the top-1 winner in
+the SAT track of the SAT Race 2019.
 
 [satlib]: https://www.cs.ubc.ca/~hoos/SATLIB/
 [bench]: https://www.cs.ubc.ca/~hoos/SATLIB/benchm.html
+[cadical]: http://fmv.jku.at/cadical/
 
 ## References
 
